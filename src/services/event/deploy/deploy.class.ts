@@ -13,8 +13,10 @@ export class Deploy {
     await executeCommand(`npx kill-port ${port}`);
 
     // Delete code in existing folder if it exists
-    await executeCommand(`sudo rm -R /home/pi/apps/${name}`);
-
+    try {
+      await executeCommand(`sudo rm -R /home/pi/apps/${name}`);
+    } catch(e) {}
+    
     // Download source code
     download(`${githubUser}/${repo}#${branch}`, `'home/pi/apps/${name}`, function (err: Error) {
       console.log(err ? 'Error' : 'Success')
