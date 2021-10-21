@@ -1,7 +1,10 @@
 //@ts-ignore no type library
 import download from 'download-git-repo';
+import { promisify } from 'util';
 import { Application } from '../../../declarations';
 import { executeCommand } from '../../../utilities';
+
+const downloadAsync = promisify(download);
 
 export class Deploy {
   constructor(private app: Application) {}
@@ -18,9 +21,7 @@ export class Deploy {
     } catch(e) {}
     
     // Download source code
-    download(`${githubUser}/${repo}#${branch}`, `'home/pi/apps/${name}`, function (err: Error) {
-      console.log(err ? 'Error' : 'Success')
-    });
+    await download(`${githubUser}/${repo}#${branch}`, `'home/pi/apps/${name}`);
 
     // Install node modules
     await executeCommand(`cd /home/pi/apps/${name} && npm i`);
