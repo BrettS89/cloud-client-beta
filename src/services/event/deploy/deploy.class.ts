@@ -21,7 +21,7 @@ export class Deploy {
     } catch(e) {}
     
     // Download source code
-    await download(`${githubUser}/${repo}#${branch}`, `'home/pi/apps/${name}`);
+    await downloadAsync(`${githubUser}/${repo}#${branch}`, `'home/pi/apps/${name}`);
 
     // Install node modules
     await executeCommand(`cd /home/pi/apps/${name} && npm i`);
