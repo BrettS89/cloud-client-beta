@@ -1,52 +1,28 @@
-import { Id, NullableId, Paginated, Params, ServiceMethods } from '@feathersjs/feathers';
+//@ts-ignore no type library
+import download from 'download-git-repo';
 import { Application } from '../../../declarations';
+import { executeCommand } from '../../../utilities';
 
-interface Data {}
+export class Deploy {
+  constructor(private app: Application) {}
 
-interface ServiceOptions {}
+  async create(data: Record<string, any>) {
+    const { githubUser, repo, branch, name, port } = data;
 
-export class Deploy implements ServiceMethods<Data> {
-  app: Application;
-  options: ServiceOptions;
+    // Kill process running on port
+    await executeCommand(`shx kill-port ${port}`);
 
-  constructor (options: ServiceOptions = {}, app: Application) {
-    this.options = options;
-    this.app = app;
-  }
+    // Delete code in existing folder if it exists
+    await executeCommand(`rm -R /home/pi/apps/${name}`);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async find (params?: Params): Promise<Data[] | Paginated<Data>> {
-    return [];
-  }
+    // Download source code
+    download(`${githubUser}/${repo}#${branch}`, `'home/pi/apps/${name}`, function (err: Error) {
+      console.log(err ? 'Error' : 'Success')
+    });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async get (id: Id, params?: Params): Promise<Data> {
-    return {
-      id, text: `A new message with ID: ${id}!`
-    };
-  }
+    // Install node modules
+    await executeCommand(`cd /home/pi/apps/${name} && npm i`);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async create (data: Data, params?: Params): Promise<Data> {
-    if (Array.isArray(data)) {
-      return Promise.all(data.map(current => this.create(current, params)));
-    }
-
-    return data;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update (id: NullableId, data: Data, params?: Params): Promise<Data> {
-    return data;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async patch (id: NullableId, data: Data, params?: Params): Promise<Data> {
-    return data;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async remove (id: NullableId, params?: Params): Promise<Data> {
-    return { id };
+    // Start server
   }
 }
