@@ -10,10 +10,10 @@ export class Deploy {
     const { githubUser, repo, branch, name, port } = data;
 
     // Kill process running on port
-    await executeCommand(`shx kill-port ${port}`);
+    await executeCommand(`npx kill-port ${port}`);
 
     // Delete code in existing folder if it exists
-    await executeCommand(`rm -R /home/pi/apps/${name}`);
+    await executeCommand(`sudo rm -R /home/pi/apps/${name}`);
 
     // Download source code
     download(`${githubUser}/${repo}#${branch}`, `'home/pi/apps/${name}`, function (err: Error) {
