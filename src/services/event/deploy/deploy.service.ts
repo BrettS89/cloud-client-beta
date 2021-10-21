@@ -17,7 +17,7 @@ export default function (app: Application): void {
   };
 
   // Initialize our service with any options it requires
-  app.use('/event/deploy', new Deploy(options, app));
+  app.use('/event/deploy', new Deploy(app));
 
   // Get our initialized service so that we can register hooks
   const service = app.service('event/deploy');
