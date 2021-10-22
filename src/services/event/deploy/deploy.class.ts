@@ -10,7 +10,7 @@ export class Deploy {
   constructor(private app: Application) {}
 
   async create(data: Record<string, any>) {
-    const { githubUser, repo, branch, name, port } = data;
+    const { githubUser, repo, branch, name, port, startCommand } = data;
 
     // Kill process running on port
     await executeCommand(`npx kill-port ${port}`);
@@ -27,5 +27,6 @@ export class Deploy {
     await executeCommand(`cd /home/pi/apps/${name} && npm i`);
 
     // Start server
+    return { success: true };
   }
 }
